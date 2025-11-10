@@ -120,31 +120,3 @@ Route::resource('medios-pago', MedioPagoController::class);
  * Roles: Digitador, Cajero, Gerente.
  */
 Route::resource('usuarios', UsuarioController::class);
-
-/*
-|--------------------------------------------------------------------------
-| Rutas Adicionales (Opcional - para futuras funcionalidades)
-|--------------------------------------------------------------------------
-*/
-
-/**
- * Ruta para buscar productos (AJAX)
- * 
- * Ejemplo de ruta adicional que podrías usar para búsquedas en tiempo real.
- */
-// Route::get('/productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
-
-/**
- * Ruta para obtener sucursal más cercana por GPS
- * 
- * Para el módulo de localización del proyecto final.
- */
-// Route::post('/sucursales/cercana', [SucursalController::class, 'cercana'])->name('sucursales.cercana');
-
-/**
- * Rutas para reportes (para la fase final del proyecto)
- */
-// Route::prefix('reportes')->group(function () {
-//     Route::get('/ventas', [ReporteController::class, 'ventas'])->name('reportes.ventas');
-//     Route::get('/inventario', [ReporteController::class, 'inventario'])->name('reportes.inventario');
-// });

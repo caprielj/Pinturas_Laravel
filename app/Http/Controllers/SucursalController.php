@@ -5,119 +5,82 @@ namespace App\Http\Controllers;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
 
-/**
- * Controlador SucursalController
- * 
- * Maneja todas las operaciones CRUD para la entidad Sucursal.
- * Las sucursales son las diferentes tiendas de la cadena "Paints".
- */
 class SucursalController extends Controller
 {
-    /**
-     * Muestra un listado de todas las sucursales.
-     * GET /sucursales
-     */
     public function index()
     {
-        // Obtener todas las sucursales ordenadas por nombre
         $sucursales = Sucursal::orderBy('nombre', 'asc')->paginate(10);
-        
         return view('sucursales.index', compact('sucursales'));
     }
 
-    /**
-     * Muestra el formulario para crear una nueva sucursal.
-     * GET /sucursales/create
-     */
     public function create()
     {
         return view('sucursales.create');
     }
 
-    /**
-     * Guarda una nueva sucursal en la base de datos.
-     * POST /sucursales
-     */
     public function store(Request $request)
     {
-        // Validar los datos del formulario
-        $validated = $request->validate([
+        $request->validate([
             'nombre' => 'required|string|max:120|unique:sucursales,nombre',
             'direccion' => 'nullable|string|max:255',
             'gps_lat' => 'nullable|numeric|between:-90,90',
             'gps_lng' => 'nullable|numeric|between:-180,180',
             'telefono' => 'nullable|string|max:30',
-            'activa' => 'boolean',
         ]);
 
-        // Crear la sucursal
-        $sucursal = Sucursal::create($validated);
+        Sucursal::create([
+            'nombre' => $request->nombre,
+            'direccion' => $request->direccion,
+            'gps_lat' => $request->gps_lat,
+            'gps_lng' => $request->gps_lng,
+            'telefono' => $request->telefono,
+            'activa' => $request->has('activa') ? 1 : 0,
+        ]);
 
-        return redirect()->route('sucursales.index')
-            ->with('success', 'Sucursal creada exitosamente.');
+        return redirect()->route('sucursales.index')->with('success', 'Sucursal creada exitosamente.');
     }
 
-    /**
-     * Muestra los detalles de una sucursal específica.
-     * GET /sucursales/{id}
-     */
-    public function show(Sucursal $sucursal)
+    public function show($id)
     {
-        // Cargar las relaciones (usuarios, inventarios)
-        $sucursal->load(['usuarios', 'inventarios']);
-        
+        $sucursal = Sucursal::findOrFail($id);
         return view('sucursales.show', compact('sucursal'));
     }
 
-    /**
-     * Muestra el formulario para editar una sucursal.
-     * GET /sucursales/{id}/edit
-     */
-    public function edit(Sucursal $sucursal)
+    public function edit($id)
     {
+        $sucursal = Sucursal::findOrFail($id);
         return view('sucursales.edit', compact('sucursal'));
     }
 
-    /**
-     * Actualiza una sucursal en la base de datos.
-     * PUT/PATCH /sucursales/{id}
-     */
-    public function update(Request $request, Sucursal $sucursal)
+    public function update(Request $request, $id)
     {
-        // Validar los datos
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:120|unique:sucursales,nombre,' . $sucursal->id,
+        $request->validate([
+            'nombre' => 'required|string|max:120|unique:sucursales,nombre,' . $id,
             'direccion' => 'nullable|string|max:255',
             'gps_lat' => 'nullable|numeric|between:-90,90',
             'gps_lng' => 'nullable|numeric|between:-180,180',
             'telefono' => 'nullable|string|max:30',
-            'activa' => 'boolean',
         ]);
 
-        // Actualizar la sucursal
-        $sucursal->update($validated);
+        $sucursal = Sucursal::findOrFail($id);
+        
+        $sucursal->update([
+            'nombre' => $request->nombre,
+            'direccion' => $request->direccion,
+            'gps_lat' => $request->gps_lat,
+            'gps_lng' => $request->gps_lng,
+            'telefono' => $request->telefono,
+            'activa' => $request->has('activa') ? 1 : 0,
+        ]);
 
-        return redirect()->route('sucursales.index')
-            ->with('success', 'Sucursal actualizada exitosamente.');
+        return redirect()->route('sucursales.index')->with('success', 'Sucursal actualizada exitosamente.');
     }
 
-    /**
-     * Elimina una sucursal de la base de datos.
-     * DELETE /sucursales/{id}
-     */
-    public function destroy(Sucursal $sucursal)
+    public function destroy($id)
     {
-        // Verificar si tiene usuarios, inventarios o facturas asociadas
-        if ($sucursal->usuarios()->count() > 0 || 
-            $sucursal->inventarios()->count() > 0 || 
-            $sucursal->facturas()->count() > 0) {
-            return redirect()->route('sucursales.index')
-                ->with('error', 'No se puede eliminar la sucursal porque tiene datos asociados.');
-        }
-
+        $sucursal = Sucursal::findOrFail($id);
         $sucursal->delete();
 
-        return redirect()->route('sucursales.index')
-            ->with('success', 'Sucursal eliminada exitosamente.');
+        return redirect()->route('sucursales.index')->with('success', 'Sucursal eliminada exitosamente.');
     }
 }

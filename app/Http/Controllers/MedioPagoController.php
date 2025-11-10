@@ -5,114 +5,78 @@ namespace App\Http\Controllers;
 use App\Models\MedioPago;
 use Illuminate\Http\Request;
 
-/**
- * Controlador MedioPagoController
- * 
- * Maneja todas las operaciones CRUD para la entidad MedioPago.
- * Los medios de pago son las formas de pago aceptadas (Efectivo, Tarjeta, Cheque, etc.)
- */
 class MedioPagoController extends Controller
 {
-    /**
-     * Muestra un listado de todos los medios de pago.
-     * GET /medios-pago
-     */
     public function index()
     {
-        // Obtener todos los medios de pago ordenados por nombre
-        $mediosPago = MedioPago::orderBy('nombre', 'asc')->paginate(10);
-        
+        $mediosPago = MedioPago::orderBy('nombre')->get();
         return view('medios-pago.index', compact('mediosPago'));
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo medio de pago.
-     * GET /medios-pago/create
-     */
     public function create()
     {
         return view('medios-pago.create');
     }
 
-    /**
-     * Guarda un nuevo medio de pago en la base de datos.
-     * POST /medios-pago
-     */
     public function store(Request $request)
     {
-        // Validar los datos del formulario
-        $validated = $request->validate([
+        $request->validate([
             'nombre' => 'required|string|max:50|unique:mediospago,nombre',
-            'activo' => 'boolean',
+            'activo' => 'nullable|boolean',
         ]);
 
-        // Si no se envía 'activo', por defecto será true
-        if (!isset($validated['activo'])) {
-            $validated['activo'] = true;
-        }
+        $data = $request->only(['nombre']);
+        $data['activo'] = $request->has('activo') ? 1 : 0;
 
-        // Crear el medio de pago
-        $medioPago = MedioPago::create($validated);
+        MedioPago::create($data);
 
         return redirect()->route('medios-pago.index')
-            ->with('success', 'Medio de pago creado exitosamente.');
+            ->with('success', 'Medio de pago creado exitosamente');
     }
 
-    /**
-     * Muestra los detalles de un medio de pago específico.
-     * GET /medios-pago/{id}
-     */
-    public function show(MedioPago $medioPago)
+    public function show($id)
     {
-        // Cargar los pagos realizados con este medio
-        $medioPago->load('pagos');
-        
+        $medioPago = MedioPago::findOrFail($id);
         return view('medios-pago.show', compact('medioPago'));
     }
 
-    /**
-     * Muestra el formulario para editar un medio de pago.
-     * GET /medios-pago/{id}/edit
-     */
-    public function edit(MedioPago $medioPago)
+    public function edit($id)
     {
+        $medioPago = MedioPago::findOrFail($id);
         return view('medios-pago.edit', compact('medioPago'));
     }
 
-    /**
-     * Actualiza un medio de pago en la base de datos.
-     * PUT/PATCH /medios-pago/{id}
-     */
-    public function update(Request $request, MedioPago $medioPago)
+    public function update(Request $request, $id)
     {
-        // Validar los datos
-        $validated = $request->validate([
+        $medioPago = MedioPago::findOrFail($id);
+        
+        $request->validate([
             'nombre' => 'required|string|max:50|unique:mediospago,nombre,' . $medioPago->id,
-            'activo' => 'boolean',
+            'activo' => 'nullable|boolean',
         ]);
 
-        // Actualizar el medio de pago
-        $medioPago->update($validated);
+        $data = $request->only(['nombre']);
+        $data['activo'] = $request->has('activo') ? 1 : 0;
+
+        $medioPago->update($data);
 
         return redirect()->route('medios-pago.index')
-            ->with('success', 'Medio de pago actualizado exitosamente.');
+            ->with('success', 'Medio de pago actualizado exitosamente');
     }
 
-    /**
-     * Elimina un medio de pago de la base de datos.
-     * DELETE /medios-pago/{id}
-     */
-    public function destroy(MedioPago $medioPago)
+    public function destroy($id)
     {
-        // Verificar si tiene pagos asociados
-        if ($medioPago->pagos()->count() > 0) {
-            return redirect()->route('medios-pago.index')
-                ->with('error', 'No se puede eliminar el medio de pago porque tiene transacciones asociadas.');
-        }
+        $medioPago = MedioPago::findOrFail($id);
+        
+        // Comentado temporalmente - se activará en Fase 2 cuando exista el modelo Pago
+        // if ($medioPago->pagos()->count() > 0) {
+        //     return redirect()->route('medios-pago.index')
+        //         ->with('error', 'No se puede eliminar. Tiene transacciones asociadas');
+        // }
 
         $medioPago->delete();
 
         return redirect()->route('medios-pago.index')
-            ->with('success', 'Medio de pago eliminado exitosamente.');
+            ->with('success', 'Medio de pago eliminado exitosamente');
     }
 }

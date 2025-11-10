@@ -7,22 +7,10 @@ use App\Models\Categoria;
 use App\Models\Marca;
 use Illuminate\Http\Request;
 
-/**
- * Controlador ProductoController
- * 
- * Maneja todas las operaciones CRUD para la entidad Producto.
- * Los productos incluyen: pinturas, solventes, accesorios y barnices.
- */
 class ProductoController extends Controller
 {
-    /**
-     * Muestra un listado de todos los productos.
-     * GET /productos
-     */
     public function index()
     {
-        // Obtener todos los productos con sus relaciones (categoría y marca)
-        // eager loading con 'with' mejora el rendimiento
         $productos = Producto::with(['categoria', 'marca'])
             ->orderBy('descripcion', 'asc')
             ->paginate(10);
@@ -30,27 +18,17 @@ class ProductoController extends Controller
         return view('productos.index', compact('productos'));
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo producto.
-     * GET /productos/create
-     */
     public function create()
     {
-        // Obtener categorías y marcas activas para los select del formulario
         $categorias = Categoria::orderBy('nombre', 'asc')->get();
-        $marcas = Marca::activas()->orderBy('nombre', 'asc')->get();
+        $marcas = Marca::where('activa', true)->orderBy('nombre', 'asc')->get();
         
         return view('productos.create', compact('categorias', 'marcas'));
     }
 
-    /**
-     * Guarda un nuevo producto en la base de datos.
-     * POST /productos
-     */
     public function store(Request $request)
     {
-        // Validar los datos del formulario
-        $validated = $request->validate([
+        $request->validate([
             'categoria_id' => 'required|exists:categorias,id',
             'marca_id' => 'required|exists:marcas,id',
             'codigo_sku' => 'required|string|max:50|unique:productos,codigo_sku',
@@ -59,83 +37,73 @@ class ProductoController extends Controller
             'duracion_anios' => 'nullable|integer|min:0',
             'extension_m2' => 'nullable|numeric|min:0',
             'color' => 'nullable|string|max:60',
-            'activo' => 'boolean',
         ]);
 
-        // Crear el producto
-        $producto = Producto::create($validated);
+        Producto::create([
+            'categoria_id' => $request->categoria_id,
+            'marca_id' => $request->marca_id,
+            'codigo_sku' => $request->codigo_sku,
+            'descripcion' => $request->descripcion,
+            'tamano' => $request->tamano,
+            'duracion_anios' => $request->duracion_anios,
+            'extension_m2' => $request->extension_m2,
+            'color' => $request->color,
+            'activo' => $request->has('activo') ? 1 : 0,
+        ]);
 
-        return redirect()->route('productos.index')
-            ->with('success', 'Producto creado exitosamente.');
+        return redirect()->route('productos.index')->with('success', 'Producto creado exitosamente.');
     }
 
-    /**
-     * Muestra los detalles de un producto específico.
-     * GET /productos/{id}
-     */
-    public function show(Producto $producto)
+    public function show($id)
     {
-        // Cargar las relaciones
-        $producto->load(['categoria', 'marca', 'presentaciones']);
-        
+        $producto = Producto::with(['categoria', 'marca'])->findOrFail($id);
         return view('productos.show', compact('producto'));
     }
 
-    /**
-     * Muestra el formulario para editar un producto.
-     * GET /productos/{id}/edit
-     */
-    public function edit(Producto $producto)
+    public function edit($id)
     {
-        // Obtener categorías y marcas para los select
+        $producto = Producto::findOrFail($id);
         $categorias = Categoria::orderBy('nombre', 'asc')->get();
-        $marcas = Marca::activas()->orderBy('nombre', 'asc')->get();
+        $marcas = Marca::where('activa', true)->orderBy('nombre', 'asc')->get();
         
         return view('productos.edit', compact('producto', 'categorias', 'marcas'));
     }
 
-    /**
-     * Actualiza un producto en la base de datos.
-     * PUT/PATCH /productos/{id}
-     */
-    public function update(Request $request, Producto $producto)
+    public function update(Request $request, $id)
     {
-        // Validar los datos
-        $validated = $request->validate([
+        $request->validate([
             'categoria_id' => 'required|exists:categorias,id',
             'marca_id' => 'required|exists:marcas,id',
-            'codigo_sku' => 'required|string|max:50|unique:productos,codigo_sku,' . $producto->id,
+            'codigo_sku' => 'required|string|max:50|unique:productos,codigo_sku,' . $id,
             'descripcion' => 'required|string|max:255',
             'tamano' => 'nullable|string|max:40',
             'duracion_anios' => 'nullable|integer|min:0',
             'extension_m2' => 'nullable|numeric|min:0',
             'color' => 'nullable|string|max:60',
-            'activo' => 'boolean',
         ]);
 
-        // Actualizar el producto
-        $producto->update($validated);
+        $producto = Producto::findOrFail($id);
+        
+        $producto->update([
+            'categoria_id' => $request->categoria_id,
+            'marca_id' => $request->marca_id,
+            'codigo_sku' => $request->codigo_sku,
+            'descripcion' => $request->descripcion,
+            'tamano' => $request->tamano,
+            'duracion_anios' => $request->duracion_anios,
+            'extension_m2' => $request->extension_m2,
+            'color' => $request->color,
+            'activo' => $request->has('activo') ? 1 : 0,
+        ]);
 
-        return redirect()->route('productos.index')
-            ->with('success', 'Producto actualizado exitosamente.');
+        return redirect()->route('productos.index')->with('success', 'Producto actualizado exitosamente.');
     }
 
-    /**
-     * Elimina un producto de la base de datos.
-     * DELETE /productos/{id}
-     */
-    public function destroy(Producto $producto)
+    public function destroy($id)
     {
-        // Verificar si tiene presentaciones o inventarios asociados
-        if ($producto->presentaciones()->count() > 0 || 
-            $producto->inventarios()->count() > 0) {
-            return redirect()->route('productos.index')
-                ->with('error', 'No se puede eliminar el producto porque tiene datos asociados.');
-        }
-
+        $producto = Producto::findOrFail($id);
         $producto->delete();
 
-        return redirect()->route('productos.index')
-            ->with('success', 'Producto eliminado exitosamente.');
+        return redirect()->route('productos.index')->with('success', 'Producto eliminado exitosamente.');
     }
 }
