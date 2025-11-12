@@ -126,7 +126,11 @@ class ClienteController extends Controller
         // findOrFail($id) = SELECT * FROM clientes WHERE id = $id
         // Si no encuentra el cliente, lanza error 404
         $cliente = Cliente::findOrFail($id);
-        
+
+        // ¿Para qué sirve compact() en PHP?
+        // compact() es una función de PHP que crea un array asociativo a partir de
+        // nombres de variables. Es muy útil cuando necesitas pasar múltiples variables a una vista.
+
         return view('clientes.show', compact('cliente'));
     }
 
@@ -226,15 +230,8 @@ class ClienteController extends Controller
     {
         // Buscar el cliente a eliminar
         $cliente = Cliente::findOrFail($id);
-        
-        // Comentado temporalmente - se activará en Fase 2 cuando existan Facturas
-        // if ($cliente->facturas()->count() > 0) {
-        //     return redirect()->route('clientes.index')
-        //         ->with('error', 'No se puede eliminar. Tiene facturas asociadas');
-        // }
 
         // Eliminar el cliente
-        // delete() = DELETE FROM clientes WHERE id = ?
         $cliente->delete();
 
         return redirect()->route('clientes.index')

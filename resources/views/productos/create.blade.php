@@ -1,9 +1,19 @@
+{{-- 
+    VISTA CREATE - FORMULARIO NUEVO PRODUCTO
+    Campos: codigo_sku*, descripcion*, categoria_id*, marca_id*, tamano, color, 
+    duracion_anios, extension_m2, activo (checkbox)
+--}}
+
+{{-- @extends: Hereda estructura del layout --}}
 @extends('layouts.app')
 
+{{-- @section inline: Define título de la página --}}
 @section('title', 'Nuevo Producto - Paints')
 
+{{-- @section: Bloque de contenido principal --}}
 @section('content')
 <div class="container-fluid">
+    {{-- Breadcrumb: Navegación de migas de pan --}}
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
@@ -17,6 +27,7 @@
             <i class="bi bi-box-seam me-2"></i>
             Nuevo Producto
         </h2>
+        {{-- route(): Genera URL para volver al índice --}}
         <a href="{{ route('productos.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i>
             Volver
@@ -24,15 +35,20 @@
     </div>
 
     <div class="row">
+        {{-- Columna Principal: Formulario --}}
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('productos.store') }}" method="POST">
+                    {{-- @csrf: Token de seguridad anti-CSRF --}}
+                    {{-- enctype="multipart/form-data": Necesario para subir archivos --}}
+                    <form action="{{ route('productos.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="codigo_sku" class="form-label">Código SKU <span class="text-danger">*</span></label>
+                                {{-- @error: Agrega clase 'is-invalid' si hay error --}}
+                                {{-- old(): Recupera valor anterior si hay error --}}
                                 <input type="text" 
                                        class="form-control @error('codigo_sku') is-invalid @enderror" 
                                        id="codigo_sku" 
@@ -61,6 +77,7 @@
 
                         <div class="mb-3">
                             <label for="descripcion" class="form-label">Descripción <span class="text-danger">*</span></label>
+                            {{-- textarea: Campo de texto multilínea --}}
                             <textarea class="form-control @error('descripcion') is-invalid @enderror" 
                                       id="descripcion" 
                                       name="descripcion" 
@@ -75,12 +92,15 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="categoria_id" class="form-label">Categoría <span class="text-danger">*</span></label>
+                                {{-- <select>: Lista desplegable para selección --}}
                                 <select class="form-select @error('categoria_id') is-invalid @enderror" 
                                         id="categoria_id" 
                                         name="categoria_id" 
                                         required>
                                     <option value="">Seleccione</option>
+                                    {{-- @foreach: Itera sobre categorías pasadas desde el controlador --}}
                                     @foreach($categorias as $categoria)
+                                        {{-- Operador ==: Marca como selected si coincide con old() --}}
                                         <option value="{{ $categoria->id }}" {{ old('categoria_id') == $categoria->id ? 'selected' : '' }}>
                                             {{ $categoria->nombre }}
                                         </option>
@@ -98,6 +118,7 @@
                                         name="marca_id" 
                                         required>
                                     <option value="">Seleccione</option>
+                                    {{-- @foreach: Itera sobre marcas --}}
                                     @foreach($marcas as $marca)
                                         <option value="{{ $marca->id }}" {{ old('marca_id') == $marca->id ? 'selected' : '' }}>
                                             {{ $marca->nombre }}
@@ -112,10 +133,10 @@
 
                         <div class="mb-3">
                             <label for="color" class="form-label">Color</label>
-                            <input type="text" 
-                                   class="form-control @error('color') is-invalid @enderror" 
-                                   id="color" 
-                                   name="color" 
+                            <input type="text"
+                                   class="form-control @error('color') is-invalid @enderror"
+                                   id="color"
+                                   name="color"
                                    value="{{ old('color') }}"
                                    placeholder="Ej: Blanco, Azul">
                             <small class="text-muted">Solo para pinturas y barnices</small>
@@ -124,9 +145,24 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="imagen" class="form-label">Imagen del Producto</label>
+                            {{-- type="file" accept="image/*": Solo acepta archivos de imagen --}}
+                            <input type="file"
+                                   class="form-control @error('imagen') is-invalid @enderror"
+                                   id="imagen"
+                                   name="imagen"
+                                   accept="image/*">
+                            <small class="text-muted">Formatos: JPG, PNG, GIF. Tamaño máximo: 2MB</small>
+                            @error('imagen')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="duracion_anios" class="form-label">Duración (años)</label>
+                                {{-- type="number" min="0": Solo acepta números positivos --}}
                                 <input type="number" 
                                        class="form-control @error('duracion_anios') is-invalid @enderror" 
                                        id="duracion_anios" 
@@ -141,6 +177,7 @@
 
                             <div class="col-md-6">
                                 <label for="extension_m2" class="form-label">Extensión (m²)</label>
+                                {{-- step="0.01": Permite decimales de 2 dígitos --}}
                                 <input type="number" 
                                        step="0.01"
                                        class="form-control @error('extension_m2') is-invalid @enderror" 
@@ -156,6 +193,8 @@
                         </div>
 
                         <div class="mb-3">
+                            {{-- form-check-switch: Estilo toggle para checkbox --}}
+                            {{-- checked: Marcado por defecto (producto activo) --}}
                             <div class="form-check form-switch">
                                 <input class="form-check-input" 
                                        type="checkbox" 
@@ -185,6 +224,7 @@
             </div>
         </div>
 
+        {{-- Columna Lateral: Información --}}
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header bg-info text-white">
@@ -204,4 +244,5 @@
         </div>
     </div>
 </div>
+{{-- @endsection: Cierra el bloque de contenido --}}
 @endsection

@@ -41,29 +41,12 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 /*
-|--------------------------------------------------------------------------
-| Rutas de Recursos (CRUD Completo)
-|--------------------------------------------------------------------------
-|
-| Route::resource() crea automáticamente todas las rutas necesarias para un CRUD:
-|
-| Método HTTP  | URI                        | Acción      | Nombre de Ruta
-| -------------|----------------------------|-------------|---------------------------
-| GET          | /clientes                  | index       | clientes.index
-| GET          | /clientes/create           | create      | clientes.create
-| POST         | /clientes                  | store       | clientes.store
-| GET          | /clientes/{id}             | show        | clientes.show
-| GET          | /clientes/{id}/edit        | edit        | clientes.edit
-| PUT/PATCH    | /clientes/{id}             | update      | clientes.update
-| DELETE       | /clientes/{id}             | destroy     | clientes.destroy
-|
-*/
 
 /**
  * Rutas para Clientes
  * 
  * Gestión completa de clientes del sistema.
- * Los clientes pueden registrarse para recibir promociones y comprar en línea.
+ * Los clientes pueden registrarse para recibir promociones
  */
 Route::resource('clientes', ClienteController::class);
 

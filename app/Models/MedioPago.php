@@ -5,24 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// Representa los métodos de pago (Efectivo, Tarjeta, Transferencia, etc.)
 class MedioPago extends Model
 {
     use HasFactory;
 
-    protected $table = 'mediospago';
+    protected $table = 'mediospago'; // Nombre de la tabla en BD
     
-    protected $fillable = ['nombre', 'activo'];
+    protected $fillable = [
+        'nombre',  // Ej: "Efectivo", "Tarjeta de Crédito"
+        'activo'   // Si el medio de pago está habilitado
+    ];
     
-    protected $casts = ['activo' => 'boolean'];
+    protected $casts = [
+        'activo' => 'boolean'  // Convierte 0/1 a false/true automáticamente
+    ];
     
-    public $timestamps = false;
+    public $timestamps = false; // No usa created_at ni updated_at
 
-    // Relación comentada temporalmente - se activará en Fase 2
-    // public function pagos()
-    // {
-    //     return $this->hasMany(Pago::class, 'medio_pago_id');
-    // }
-
+    // Query Scope: Filtra solo medios de pago activos
+    // Uso: MedioPago::activos()->get()
     public function scopeActivos($query)
     {
         return $query->where('activo', true);

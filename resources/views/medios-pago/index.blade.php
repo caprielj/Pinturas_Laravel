@@ -22,6 +22,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -30,10 +31,11 @@
                 <tbody>
                     @forelse($mediosPago as $medioPago)
                         <tr>
+                            <td>{{ $medioPago->id }}</td>
                             <td>
-                                <i class="bi bi-{{ 
-                                    str_contains(strtolower($medioPago->nombre), 'efectivo') ? 'cash-stack' : 
-                                    (str_contains(strtolower($medioPago->nombre), 'cheque') ? 'receipt' : 
+                                <i class="bi bi-{{
+                                    str_contains(strtolower($medioPago->nombre), 'efectivo') ? 'cash-stack' :
+                                    (str_contains(strtolower($medioPago->nombre), 'cheque') ? 'receipt' :
                                     (str_contains(strtolower($medioPago->nombre), 'transferencia') || str_contains(strtolower($medioPago->nombre), 'banco') ? 'bank' : 'credit-card'))
                                 }} me-2"></i>
                                 {{ $medioPago->nombre }}

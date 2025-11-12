@@ -9,21 +9,6 @@ use Illuminate\Database\Eloquent\Model;
  * Modelo Cliente
  * 
  * Representa a los clientes de la tienda de pinturas
- * Tabla en BD: clientes
- * 
- * Campos principales:
- * - id: Identificador único (auto-increment)
- * - nombre: Nombre completo del cliente
- * - nit: Número de Identificación Tributaria (único, opcional)
- * - email: Correo electrónico (único, obligatorio)
- * - password_hash: Contraseña encriptada (opcional)
- * - telefono: Teléfono de contacto
- * - direccion: Dirección física
- * - gps_lat: Latitud GPS
- * - gps_lng: Longitud GPS
- * - opt_in_promos: Acepta recibir promociones (booleano)
- * - verificado: Email verificado (booleano)
- * - creado_en: Fecha de creación
  */
 class Cliente extends Model
 {

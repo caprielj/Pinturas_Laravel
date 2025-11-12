@@ -1,34 +1,20 @@
 {{-- 
-    Vista: clientes/create.blade.php
-    
-    Formulario para crear un nuevo cliente
-    
-    Campos del formulario:
-    - nombre (obligatorio): Nombre completo del cliente
-    - nit (opcional): Número de Identificación Tributaria
-    - email (obligatorio): Correo electrónico único
-    - password (opcional): Contraseña si tendrá acceso al sistema
-    - telefono (opcional): Número de teléfono
-    - direccion (opcional): Dirección física completa
-    - gps_lat (opcional): Latitud GPS
-    - gps_lng (opcional): Longitud GPS
-    - opt_in_promos (checkbox): Acepta recibir promociones
+    VISTA CREATE - FORMULARIO NUEVO CLIENTE
+    Campos: nombre*, email*, nit, telefono, direccion, gps, password, opt_in_promos
 --}}
 
+{{-- @extends: Hereda estructura del layout --}}
 @extends('layouts.app')
 
+{{-- @section: Bloque de contenido principal --}}
 @section('content')
 <div class="container mt-4">
     <h2><i class="bi bi-person-plus me-2"></i>Nuevo Cliente</h2>
 
     <div class="card mt-3">
         <div class="card-body">
-            {{-- 
-                Formulario
-                action: URL donde se enviarán los datos
-                method="POST": Método HTTP para crear recursos
-                @csrf: Token de seguridad contra ataques CSRF
-            --}}
+            {{-- route(): Genera URL de destino del formulario --}}
+            {{-- @csrf: Token de seguridad anti-CSRF --}}
             <form action="{{ route('clientes.store') }}" method="POST">
                 @csrf
 
@@ -39,14 +25,12 @@
                     {{-- Campo Nombre (obligatorio) --}}
                     <div class="col-md-6">
                         <label for="nombre" class="form-label">Nombre Completo *</label>
-                        {{-- 
-                            value="{{ old('nombre') }}"
-                            old('nombre') recupera el valor anterior si hay error de validación
-                            @error('nombre') muestra mensaje de error si existe
-                        --}}
+                        {{-- old(): Recupera valor anterior si hay error --}}
+                        {{-- @error: Agrega clase 'is-invalid' si hay error de validación --}}
                         <input type="text" name="nombre" id="nombre" 
                                class="form-control @error('nombre') is-invalid @enderror" 
                                value="{{ old('nombre') }}" required>
+                        {{-- @error: Muestra mensaje de error --}}
                         @error('nombre')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -107,10 +91,9 @@
                 {{-- SECCIÓN: Dirección --}}
                 <h5 class="mb-3 mt-4"><i class="bi bi-geo-alt me-2"></i>Dirección</h5>
 
-                {{-- Campo Dirección (opcional) --}}
+                {{-- Campo Dirección (textarea - texto multilínea) --}}
                 <div class="mb-3">
                     <label for="direccion" class="form-label">Dirección Completa</label>
-                    {{-- textarea: Campo de texto multilínea --}}
                     <textarea name="direccion" id="direccion" rows="2"
                               class="form-control @error('direccion') is-invalid @enderror">{{ old('direccion') }}</textarea>
                     @error('direccion')
@@ -123,10 +106,7 @@
                     {{-- Campo Latitud GPS --}}
                     <div class="col-md-6">
                         <label for="gps_lat" class="form-label">Latitud GPS</label>
-                        {{-- 
-                            type="number": Solo acepta números
-                            step="0.000001": Permite decimales de 6 dígitos
-                        --}}
+                        {{-- type="number" step="0.000001": Permite decimales precisos --}}
                         <input type="number" step="0.000001" name="gps_lat" id="gps_lat" 
                                class="form-control @error('gps_lat') is-invalid @enderror" 
                                value="{{ old('gps_lat') }}" placeholder="Ej: 14.634915">
@@ -153,10 +133,7 @@
                 {{-- Checkbox: Acepta Promociones --}}
                 <div class="mb-3">
                     <div class="form-check">
-                        {{-- 
-                            type="checkbox": Casilla de verificación
-                            value="1": Valor cuando está marcado
-                        --}}
+                        {{-- type="checkbox" value="1": Si está marcado envía 1, si no, nada --}}
                         <input class="form-check-input" type="checkbox" id="opt_in_promos" 
                                name="opt_in_promos" value="1">
                         <label class="form-check-label" for="opt_in_promos">
@@ -175,4 +152,5 @@
         </div>
     </div>
 </div>
+{{-- @endsection: Cierra el bloque de contenido --}}
 @endsection

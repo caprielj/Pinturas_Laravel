@@ -1,12 +1,17 @@
+{{-- @extends: Hereda toda la estructura del layout 'layouts.app' --}}
 @extends('layouts.app')
 
+{{-- @section inline: Define el título de la página en una sola línea --}}
 @section('title', 'Nueva Sucursal - Paints')
 
+{{-- @section: Inicia la sección 'content' que contiene todo el contenido principal de la página --}}
 @section('content')
 <div class="container-fluid">
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
+            {{-- {{ route() }}: Helper que genera la URL para la ruta 'dashboard' --}}
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+            {{-- {{ route() }}: Genera la URL para el listado de sucursales --}}
             <li class="breadcrumb-item"><a href="{{ route('sucursales.index') }}">Sucursales</a></li>
             <li class="breadcrumb-item active">Nueva</li>
         </ol>
@@ -17,6 +22,7 @@
             <i class="bi bi-shop-window me-2"></i>
             Nueva Sucursal
         </h2>
+        {{-- {{ route() }}: Genera la URL para volver al listado --}}
         <a href="{{ route('sucursales.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i>
             Volver
@@ -27,30 +33,40 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
+                    {{-- {{ route() }}: Genera la URL para almacenar la nueva sucursal (método POST) --}}
                     <form action="{{ route('sucursales.store') }}" method="POST">
+                        {{-- @csrf: Token de seguridad contra ataques CSRF (Cross-Site Request Forgery) --}}
                         @csrf
 
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                            {{-- @error: Agrega clase 'is-invalid' si hay un error de validación en 'nombre' --}}
                             <input type="text" 
                                    class="form-control @error('nombre') is-invalid @enderror" 
                                    id="nombre" 
                                    name="nombre" 
+                                   {{-- old(): Mantiene el valor anterior si el formulario falla la validación --}}
                                    value="{{ old('nombre') }}" 
                                    required
                                    placeholder="Ej: Pradera Xela">
+                            {{-- @error: Si hay error en 'nombre', muestra este bloque con el mensaje --}}
                             @error('nombre')
+                                {{-- $message: Variable automática con el mensaje de error de validación --}}
                                 <div class="invalid-feedback">{{ $message }}</div>
+                            {{-- @enderror: Cierra el bloque de error --}}
                             @enderror
                         </div>
 
                         <div class="mb-3">
                             <label for="direccion" class="form-label">Dirección</label>
+                            {{-- @error: Verifica si hay error en el campo 'direccion' --}}
                             <textarea class="form-control @error('direccion') is-invalid @enderror" 
                                       id="direccion" 
                                       name="direccion" 
                                       rows="2"
+                                      {{-- {{ old() }}: Recupera el valor anterior dentro del textarea --}}
                                       placeholder="Ingresa la dirección física">{{ old('direccion') }}</textarea>
+                            {{-- @error: Muestra el mensaje de error para 'direccion' --}}
                             @error('direccion')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -115,6 +131,7 @@
                         <hr class="my-4">
                         
                         <div class="d-flex justify-content-between">
+                            {{-- {{ route() }}: Genera la URL para cancelar y volver al listado --}}
                             <a href="{{ route('sucursales.index') }}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle me-2"></i>
                                 Cancelar
@@ -151,4 +168,5 @@
         </div>
     </div>
 </div>
+{{-- @endsection: Cierra la sección 'content' abierta al inicio del archivo --}}
 @endsection

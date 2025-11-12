@@ -1,17 +1,20 @@
-{{-- Vista: clientes/edit.blade.php - Formulario para editar cliente existente --}}
+{{-- 
+    VISTA EDIT - FORMULARIO EDITAR CLIENTE
+    Usa @method('PUT') para actualizar, carga valores existentes de BD
+--}}
 
+{{-- @extends: Hereda estructura del layout --}}
 @extends('layouts.app')
 
+{{-- @section: Bloque de contenido principal --}}
 @section('content')
 <div class="container mt-4">
     <h2><i class="bi bi-pencil-square me-2"></i>Editar Cliente</h2>
 
     <div class="card mt-3">
         <div class="card-body">
-            {{-- 
-                @method('PUT'): Laravel necesita esto para actualizar recursos
-                Los formularios HTML solo soportan GET y POST
-            --}}
+            {{-- route() con parámetro: Genera /clientes/{id} --}}
+            {{-- @method('PUT'): Simula método HTTP PUT para actualizar --}}
             <form action="{{ route('clientes.update', $cliente->id) }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -21,11 +24,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="nombre" class="form-label">Nombre Completo *</label>
-                        {{-- 
-                            old('nombre', $cliente->nombre)
-                            1. Intenta obtener el valor de la sesión (si hubo error)
-                            2. Si no existe, usa el valor actual de la BD
-                        --}}
+                        {{-- old('campo', $default): Prioriza valor anterior, si no usa valor de BD --}}
                         <input type="text" name="nombre" id="nombre" 
                                class="form-control @error('nombre') is-invalid @enderror" 
                                value="{{ old('nombre', $cliente->nombre) }}" required>
@@ -69,12 +68,13 @@
                     </div>
                 </div>
 
-                {{-- Cambio de contraseña (opcional) --}}
+                {{-- Alerta informativa sobre cambio de contraseña --}}
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle me-2"></i>
                     Deja este campo en blanco si no deseas cambiar la contraseña
                 </div>
 
+                {{-- Campo contraseña (opcional en edición) --}}
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="password" class="form-label">Nueva Contraseña</label>
@@ -122,11 +122,8 @@
                 <h5 class="mb-3 mt-4"><i class="bi bi-sliders me-2"></i>Preferencias</h5>
 
                 <div class="mb-3">
-                    {{-- 
-                        Checkbox: Acepta Promociones
-                        {{ old('opt_in_promos', $cliente->opt_in_promos) ? 'checked' : '' }}
-                        Si el valor es true/1, agrega el atributo 'checked'
-                    --}}
+                    {{-- Checkbox con valor existente: Si es true/1 agrega 'checked' --}}
+                    {{-- Operador ternario: condición ? 'checked' : '' --}}
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" id="opt_in_promos" 
                                name="opt_in_promos" value="1" 
@@ -155,4 +152,5 @@
         </div>
     </div>
 </div>
+{{-- @endsection: Cierra el bloque de contenido --}}
 @endsection

@@ -47,6 +47,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Email</th>
                         <th>Teléfono</th>
@@ -62,6 +63,8 @@
                     --}}
                     @forelse($clientes as $cliente)
                         <tr>
+                            {{-- Columna ID --}}
+                            <td>{{ $cliente->id }}</td>
                             {{-- Columna Nombre --}}
                             <td>{{ $cliente->nombre }}</td>
                             
