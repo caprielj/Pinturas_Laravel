@@ -285,9 +285,21 @@
                 <i class="bi bi-paint-bucket"></i> Paints
             </a>
 
-            {{-- Info del usuario (opcional) --}}
-            <div class="ms-auto text-white">
-                <i class="bi bi-person-circle"></i> Sistema
+            {{-- Info del usuario y logout --}}
+            <div class="ms-auto d-flex align-items-center">
+                <div class="text-white me-3">
+                    <i class="bi bi-person-circle"></i>
+                    {{ Auth::user()->nombre ?? 'Usuario' }}
+                    @if(Auth::user()->rol)
+                        <small class="text-white-50">({{ Auth::user()->rol->nombre }})</small>
+                    @endif
+                </div>
+                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-box-arrow-right"></i> Salir
+                    </button>
+                </form>
             </div>
         </div>
     </nav>

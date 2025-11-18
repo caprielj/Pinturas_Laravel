@@ -52,6 +52,13 @@ class Usuario extends Authenticatable
         return $this->password_hash;
     }
 
+    // Especifica el campo que se usa como identificador para login
+    // Por defecto Laravel busca 'email', aquí confirmamos que usamos 'email'
+    public function getAuthIdentifierName()
+    {
+        return 'email';
+    }
+
     // Relación belongsTo: Un usuario PERTENECE a un Rol
     // Uso: $usuario->rol->nombre (Ej: "Administrador", "Cajero")
     public function rol()
